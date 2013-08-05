@@ -49,7 +49,7 @@ if platform.system() == "Darwin":
       osOptions=dict(setup_requires = ['py2app'], app=['bin/derp.py'])
 elif platform.system() == "Windows":
        import py2exe
-       options={'py2exe': {'bundle_files': 1, 'optimize': 2, 'compressed': 1,}}
+       options={'py2exe': {'bundle_files': 1, 'optimize': 0, 'compressed': 1,}}
        osOptions=dict(windows=["src/derp.py"])
 else:
       options  = {}
