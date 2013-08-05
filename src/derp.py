@@ -67,6 +67,17 @@ elif platform.system() == "Linux":
                   "android-sdk-linux"]
     toolsFolder = os.path.join("/opt", app_name.lower(), "tools")
     downloadsFolder = os.path.join("/tmp", app_name.lower(), "downloads")
+elif platform.system() == "Windows":
+    androidSdk = ["https://dl.google.com/android/",
+                  "android-sdk_r22.0.5-windows.zip",
+                  "ff526157c105f89451f860bce61d5e7c63a90092e84360eddd040a14c6f3248770a3c614d4041726b744a56629986b4b71b275438da265f66a1a24c9e3a32e29",
+                  "android-sdk-windows"]
+    toolsFolder = os.path.join("C:\\", "Program Files", "Common Files", app_name.lower(), "tools")
+    downloadsFolder = os.path.join("C:\\", "Program Files", "Common Files", app_name.lower(), "downloads")
+
+androidExecutable = "android"
+if platform.system() == "Windows":
+	androidExecutable = "android.bat"
 
 # bash/python locations.  /bin/bash supposedly works w/Windows, but not sure about that. 
 bash = "/bin/bash"
@@ -722,8 +733,7 @@ class Script():
             stdoutString = ""
 
             if self.subProcessThread.p != None:
-                if select.select([self.subProcessThread.p.stdout],
-                                 [], [], 0.0)[0]:
+                if sys.stdin.isatty():
                     if self.updatedTools == True:
                         stdoutString = self.subProcessThread.p.stdout.readline()
                         self.ScriptLog("^^  OUTPUT : " + stdoutString.rstrip('\n'))
@@ -760,8 +770,7 @@ class Script():
 
         # get anything left in the pipe after process stops...
         try:
-            if select.select([self.subProcessThread.p.stdout],
-                         [], [], 0.0)[0]:
+            if sys.stdin.isatty():
                 stdoutString = self.subProcessThread.p.stdout.read()
                 for line in stdoutString.split("\n"):
                     self.ScriptLog("^^  OUTPUT : " + line.rstrip())
@@ -880,7 +889,7 @@ class Script():
         self.ScriptLog("ACTION     : Updating SDK Tools...")
         self.ScriptLog(" " * 10 + "Checking for SDK...")
         attempt = 1
-        while not os.access(os.path.join(toolsFolder, androidSdk[3], "tools", "android"),
+        while not os.access(os.path.join(toolsFolder, androidSdk[3], "tools", androidExecutable),
                              os.X_OK):
             self.ScriptLog("Try #" + str(attempt) + 
                            ":  Trying to install tools.")
@@ -920,10 +929,11 @@ class Script():
                     try:
                         myzip = zipfile.ZipFile(os.path.join(toolsFolder, androidSdk[1]), 'r')
                         myzip.extractall(toolsFolder)
-                        # for some reason permission not set on mac
-                        os.chmod(os.path.join(toolsFolder, androidSdk[3], "tools", "android"),
-                            os.stat(os.path.join(toolsFolder, androidSdk[3],
-                            "tools", "android")).st_mode | stat.S_IXUSR)
+                        if platform.system() == "Darwin":
+							# for some reason permission not set on mac
+							os.chmod(os.path.join(toolsFolder, androidSdk[3], "tools", androidExecutable),
+								os.stat(os.path.join(toolsFolder, androidSdk[3],
+								"tools", "android")).st_mode | stat.S_IXUSR)
                     except:
                         self.ScriptLog("Unexpected error unzipping file.")
                 self.ScriptLog("Done extracting tools!")
@@ -949,12 +959,12 @@ class Script():
         else:
             self.ScriptLog("SDK found.  No need to get it again!")
 
-        if os.access(os.path.join(toolsFolder, androidSdk[3], "tools", "android"), os.X_OK):
+        if os.access(os.path.join(toolsFolder, androidSdk[3], "tools", androidExecutable), os.X_OK):
             from stat import S_IWUSR, S_IWGRP, S_IWOTH
-            self.DoSubProcess([os.path.join(toolsFolder, androidSdk[3], "tools", "android"), \
+            self.DoSubProcess([os.path.join(toolsFolder, androidSdk[3], "tools", androidExecutable), \
                             "update", "sdk", \
                             "--no-ui", "--filter", "platform-tool, tool"])
-            self.DoSubProcess([os.path.join(toolsFolder, androidSdk[3], "tools", "android"), \
+            self.DoSubProcess([os.path.join(toolsFolder, androidSdk[3], "tools", androidExecutable), \
                                "update", "adb"])
             # Make everything in tools/downloads world read-only so users can't change it.
             for dirpath, dirs, files in os.walk(toolsFolder):
