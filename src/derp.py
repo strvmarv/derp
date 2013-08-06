@@ -45,7 +45,12 @@ if wx.MAJOR_VERSION == 2:
 
 app_name = "DERP"
 app_version = "0.001"
-scriptFolder = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "scripts/")
+#scriptFolder = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "scripts/")
+
+if platform.system() == "Windows":
+    scriptFolder = os.path.join(os.path.dirname("."), "..", "scripts/")
+else:
+    scriptFolder = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "scripts/")
 
 # adb/fastboot modes
 NO_CONNECTION = 0
@@ -83,7 +88,13 @@ if platform.system() == "Windows":
 bash = "/bin/bash"
 python = sys.executable
 
-licenseFile = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "LICENSE")
+#licenseFile = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "LICENSE")
+
+if platform.system() == "Windows":
+    licenseFile = os.path.join(os.path.dirname("."), "..", "LICENSE")
+else:
+    licenseFile = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "LICENSE")
+
 welcomeScript = os.path.join(scriptFolder, "derp", "welcome", "welcome.derp")
 tutorialScript = os.path.join(scriptFolder, "derp", "tutorial", "tutorial.derp")
 faqScript = os.path.join(scriptFolder, "derp", "faq", "faq.derp")
