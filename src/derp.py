@@ -79,6 +79,9 @@ elif platform.system() == "Windows":
                   "android-sdk-windows"]
     toolsFolder = os.path.join("C:\\", "Program Files", "Common Files", app_name.lower(), "tools")
     downloadsFolder = os.path.join("C:\\", "Program Files", "Common Files", app_name.lower(), "downloads")
+	
+    # toolsFolder = os.path.join(".", "tools")
+    # downloadsFolder = os.path.join(".", "downloads")
 
 androidExecutable = "android"
 if platform.system() == "Windows":
